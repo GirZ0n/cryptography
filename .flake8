@@ -1,0 +1,27 @@
+[flake8]
+max-line-length=120
+
+ignore=D10, # Missing docstrings
+       I00, # flake8-isort
+       E402, # Module level import not at top of file.
+       WPS100, # Forbid blacklisted module names.
+       WPS111, # Forbid short variable or module names.
+       WPS210, # Forbid too many local variables in the unit of code.
+       WPS211, # Forbid too many arguments for a function or method.
+       WPS221, # Forbid complex lines.
+       WPS226, # Forbid the overuse of string constants.
+       WPS234, # Forbid overly complex annotations.
+       WPS237, # Forbids f strings that are too complex.
+       WPS301, # Forbid imports like import os.path.
+       WPS305, # Forbid f strings.
+       WPS306, # Forbid writing classes without base classes.
+       WPS323, # Forbid % formatting on strings.
+       WPS342, # Forbid \\ escape sequences inside regular strings.
+       WPS412, # Forbid logic inside __init__ module.
+       WPS407, # Forbid mutable constants on a module level.
+       WPS421, # Forbid calling some built-in functions.
+       WPS432, # Forbid magic numbers.
+
+exclude=venv,
+
+allowed-domain-names=variable,
