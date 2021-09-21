@@ -9,6 +9,7 @@ def get_lengths(ciphertext: str, segment_length: int) -> List[int]:
         for j in range(i + 1, len(ciphertext) - segment_length + 1):
             if ciphertext[i:(i + segment_length)] == ciphertext[j:(j + segment_length)]:
                 lengths.append(j - i)
+
     return lengths
 
 
