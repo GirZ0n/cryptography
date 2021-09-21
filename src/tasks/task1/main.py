@@ -3,12 +3,11 @@ from math import floor, sqrt
 from typing import List, Set, Tuple
 
 
-def get_lengths(ciphertext: str, segment_length: int):
-    # TODO: Могут ли пересекаться?
+def get_lengths(ciphertext: str, segment_length: int) -> List[int]:
     lengths = []
     for i in range(len(ciphertext) - segment_length + 1):
         for j in range(i + 1, len(ciphertext) - segment_length + 1):
-            if ciphertext[i : i + segment_length] == ciphertext[j : j + segment_length]:
+            if ciphertext[i:(i + segment_length)] == ciphertext[j:(j + segment_length)]:
                 lengths.append(j - i)
     return lengths
 
@@ -19,6 +18,7 @@ def get_divisors(number: int) -> Set[int]:
         if number % i == 0:
             divisors.add(i)
             divisors.add(number // i)
+
     return divisors
 
 
@@ -33,9 +33,13 @@ def find_possible_key_lengths(ciphertext: str, segment_length: int = 2, top: int
     return counter.most_common(top)
 
 
-if __name__ == '__main__':
+def main() -> None:
     with open('input.txt') as f:
         possible_key_lengths = find_possible_key_lengths(f.read(), 3)
 
     for key_length, number in possible_key_lengths:
         print(f'{key_length}: {number}')
+
+
+if __name__ == '__main__':
+    main()
