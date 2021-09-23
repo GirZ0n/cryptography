@@ -23,5 +23,3 @@ ignore=D10, # Missing docstrings
        WPS432, # Forbid magic numbers.
 
 exclude=venv,
-
-allowed-domain-names=variable,
