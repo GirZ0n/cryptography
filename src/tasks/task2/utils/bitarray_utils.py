@@ -3,6 +3,8 @@ from typing import List
 
 from bitarray import bitarray
 
+from src.tasks.task2.config import FILL_SYMBOL
+
 
 def convert_text_to_bitarray(text: str) -> bitarray:
     array = bitarray()
@@ -14,7 +16,7 @@ def convert_key_to_bitarray(key: str, *, number_of_bits: int, base: int) -> bita
     return bitarray(format(int(key, base), f'0{number_of_bits}b'))[:number_of_bits]
 
 
-def split_by_block_length(bits: bitarray, block_length: int, fill: str) -> List[bitarray]:
+def split_by_block_length(bits: bitarray, block_length: int, fill: str = FILL_SYMBOL) -> List[bitarray]:
     blocks = [bits[i: (i + block_length)] for i in range(0, len(bits), block_length)]
 
     bit_fill = convert_text_to_bitarray(fill)

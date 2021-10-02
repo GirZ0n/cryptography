@@ -13,7 +13,7 @@ def feistel_function(block: bitarray, key: bitarray) -> bitarray:
     extended_block = xor(extended_block, key)
 
     encrypted_block = bitarray()
-    blocks = split_by_block_length(extended_block, 6, FILL_SYMBOL)
+    blocks = split_by_block_length(extended_block, 6)
     for index, current_block in enumerate(blocks):
         i = int(f'{current_block[0]}{current_block[-1]}', 2)
         j = int(current_block[1:-1].to01(), 2)

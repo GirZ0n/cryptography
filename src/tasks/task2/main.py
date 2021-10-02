@@ -1,7 +1,6 @@
 from bitarray import bitarray
 
 from src.tasks.task2.config import (
-    FILL_SYMBOL,
     INITIAL_PERMUTATION,
     KEY_INITIAL_PERMUTATION,
     REVERSED_INITIAL_PERMUTATION,
@@ -18,7 +17,7 @@ from src.tasks.task2.utils.key_utils import add_additional_bits, generate_subkey
 
 def encode(text: str, key: str) -> bitarray:
     bitstring = convert_text_to_bitarray(text)
-    blocks = split_by_block_length(bitstring, 64, FILL_SYMBOL)
+    blocks = split_by_block_length(bitstring, 64)
     bitkey = convert_key_to_bitarray(key, number_of_bits=56, base=16)
     extended_key = add_additional_bits(bitkey)
     shuffled_key = permute(extended_key, KEY_INITIAL_PERMUTATION)
@@ -34,7 +33,7 @@ def encode(text: str, key: str) -> bitarray:
 
 
 def decode(bitstring: bitarray, key: str) -> str:
-    blocks = split_by_block_length(bitstring, 64, FILL_SYMBOL)
+    blocks = split_by_block_length(bitstring, 64)
     bitkey = convert_key_to_bitarray(key, number_of_bits=56, base=16)
     extended_key = add_additional_bits(bitkey)
     shuffled_key = permute(extended_key, KEY_INITIAL_PERMUTATION)
