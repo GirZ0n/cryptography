@@ -15,10 +15,10 @@ def add_additional_bits(
     key: bitarray,
     calculate_additional_bit: Callable[[bitarray], int] = generate_oddity_bit,
 ) -> bitarray:
-    if len(key) % 8 != 0:
-        raise ValueError('The length of the key must be a multiple of 8.')
+    if len(key) % 7 != 0:
+        raise ValueError('The length of the key must be a multiple of 7.')
 
-    blocks = split_by_block_length(key, 7, FILL_SYMBOL)
+    blocks = split_by_block_length(key, 7)
 
     extended_key = bitarray()
     for block in blocks:
