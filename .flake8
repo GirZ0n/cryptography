@@ -3,6 +3,7 @@ max-line-length=120
 
 ignore=D10, # Missing docstrings
        I00, # flake8-isort
+       E203, # Whitespace before ':'.
        E402, # Module level import not at top of file.
        WPS100, # Forbid blacklisted module names.
        WPS111, # Forbid short variable or module names.
@@ -16,6 +17,7 @@ ignore=D10, # Missing docstrings
        WPS305, # Forbid f strings.
        WPS306, # Forbid writing classes without base classes.
        WPS323, # Forbid % formatting on strings.
+       WPS326, # Forbid implicit string concatenation.
        WPS342, # Forbid \\ escape sequences inside regular strings.
        WPS412, # Forbid logic inside __init__ module.
        WPS407, # Forbid mutable constants on a module level.

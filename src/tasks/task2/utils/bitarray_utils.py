@@ -35,7 +35,7 @@ def permute(block: bitarray, permutation_table: tuple, bias: int = 1) -> bitarra
     if min(permutation_table) - bias < 0 or max(permutation_table) - bias >= len(block):
         raise ValueError(
             f'The values in the table of permutations must be in the range from 0 to {len(block) - 1}. '
-            f'The current value range with bias: [{min(permutation_table) - bias}, {max(permutation_table) - bias}].'
+            f'The current value range with bias: [{min(permutation_table) - bias}, {max(permutation_table) - bias}].',
         )
 
     return bitarray([block[position - bias] for position in permutation_table])
