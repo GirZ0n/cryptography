@@ -3,7 +3,7 @@ from typing import Callable, List, Literal, Tuple
 from bitarray import bitarray
 from bitarray.util import parity
 
-from src.tasks.task2.config import CYCLIC_SHIFT, FILL_SYMBOL, SUBKEY_PERMUTATION
+from src.tasks.task2.config import CYCLIC_SHIFT, SUBKEY_PERMUTATION
 from src.tasks.task2.utils.bitarray_utils import permute, split_by_block_length
 
 

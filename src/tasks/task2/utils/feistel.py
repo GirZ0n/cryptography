@@ -4,7 +4,7 @@ from typing import Callable, List
 from bitarray import bitarray
 from bitarray.util import int2ba
 
-from src.tasks.task2.config import BASIC_CONVERSION_TABLES, EXPANSION_TABLE, FILL_SYMBOL, FINAL_PERMUTATION
+from src.tasks.task2.config import BASIC_CONVERSION_TABLES, EXPANSION_TABLE, FINAL_PERMUTATION
 from src.tasks.task2.utils.bitarray_utils import permute, split_by_block_length
 
 
