@@ -40,10 +40,7 @@ def show_decoder(key: str):
     if encrypted_text != '' and key != '':
         decrypted_text = decode(hex2ba(encrypted_text), key)
         st.markdown('**Decrypted text**')
-        try:
-            st.markdown(decrypted_text.tobytes().decode().strip('\x00'))
-        except UnicodeDecodeError:
-            st.markdown(ba2hex(decrypted_text))
+        st.markdown(decrypted_text.tobytes().decode(errors='replace').strip('\x00'))
 
 
 def main():
