@@ -30,7 +30,7 @@ def split_by_block_length(bits: bitarray, block_length: int, fill_symbol: str = 
 
     ba_fill_symbol = convert_text_to_bitarray(fill_symbol)
     if len(ba_fill_symbol) != 8:
-        raise ValueError('The bit length of "fill" must be 8.')
+        raise ValueError('The bit length of "fill_symbol" must be 8.')
 
     last_block = blocks[-1]
     if len(last_block) != block_length:
