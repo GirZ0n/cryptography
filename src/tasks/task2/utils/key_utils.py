@@ -35,8 +35,8 @@ def cyclic_shift(block: Tuple, bias: int, direction: Literal['left', 'right'] = 
     if direction == 'right':
         bias = len(block) - bias
 
-    right = block[bias::]
     left = block[:bias:]
+    right = block[bias::]
     return right + left
 
 
