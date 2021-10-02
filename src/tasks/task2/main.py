@@ -32,7 +32,7 @@ def encode(text: str, key: str) -> bitarray:
     return encrypted_text
 
 
-def decode(bitstring: bitarray, key: str) -> str:
+def decode(bitstring: bitarray, key: str) -> bitarray:
     blocks = split_by_block_length(bitstring, 64)
     bitkey = convert_hex_key_to_bitarray(key, length=56)
     extended_key = add_additional_bits(bitkey)
@@ -45,4 +45,4 @@ def decode(bitstring: bitarray, key: str) -> str:
         encrypted_block = feistel_transformations(shuffled_block, subkeys[::-1])
         encrypted_text += permute(encrypted_block, REVERSED_INITIAL_PERMUTATION)
 
-    return encrypted_text.tobytes().decode()
+    return encrypted_text
