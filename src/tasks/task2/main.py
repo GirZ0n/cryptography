@@ -47,10 +47,3 @@ def decode(bitstring: bitarray, key: str) -> str:
         encrypted_text += permute(encrypted_block, REVERSED_INITIAL_PERMUTATION)
 
     return encrypted_text.tobytes().decode()
-
-
-if __name__ == '__main__':
-    key = '0000000000000F'
-    res = encode('Привет, меня зовут Илья!', key)
-    print(res)
-    print(decode(res, key))
