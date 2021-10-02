@@ -5,7 +5,6 @@ from src.tasks.task2.config import (
     FILL_SYMBOL,
     INITIAL_PERMUTATION,
     KEY_INITIAL_PERMUTATION,
-    REVERSED_INITIAL_PERMUTATION,
 )
 from src.tasks.task2.utils.bitarray_utils import (
     convert_key_to_bitarray,
@@ -13,7 +12,7 @@ from src.tasks.task2.utils.bitarray_utils import (
     permute,
     split_by_block_length,
 )
-from src.tasks.task2.utils.feistel import feistel_transformation
+from src.tasks.task2.utils.feistel import feistel_transformations
 from src.tasks.task2.utils.key_utils import add_additional_bits, generate_subkeys
 
 
@@ -28,15 +27,10 @@ def encode(text: str, key: str) -> str:
     encrypted_text = bitarray()
     for block in blocks:
         shuffled_block = permute(block, INITIAL_PERMUTATION)
-
-        encrypted_block = shuffled_block
-        for i in range(16):
-            encrypted_block = feistel_transformation(encrypted_block, subkeys[i])
-
-        encrypted_text += permute(encrypted_block, REVERSED_INITIAL_PERMUTATION)
+        encrypted_text += feistel_transformations(shuffled_block, subkeys)
 
     return ba2hex(encrypted_text)
 
 
 if __name__ == '__main__':
-    print(encode('qwerty', 'F'))
+    print(encode('Hello', 'ac43d5e3baf18e'))
