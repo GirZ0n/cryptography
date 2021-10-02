@@ -14,8 +14,9 @@ def show_encoder():
     text = st.text_input('Text:')
     key = st.text_input('Key:', max_chars=14, key='encoder_key')
 
-    if key != '' and not re.match(r'^[0-9a-fA-F]+$', key):
+    if key != '' and not re.match('^[0-9a-fA-F]+$', key):
         st.error('Key must be in hexadecimal.')
+        st.stop()
 
     if text != '' and key != '':
         encrypted_text = encode(text, key)
@@ -29,18 +30,15 @@ def show_decoder(key: str):
     encrypted_text = st.text_input('Encrypted text:')
     key = st.text_input('Key:', max_chars=14, value=key, key='decoder_key')
 
-    if encrypted_text != '' and not re.match(r'^[0-9a-fA-F]+$', encrypted_text):
+    if encrypted_text != '' and not re.match('^[0-9a-fA-F]+$', encrypted_text):
         st.error('Text must be in hexadecimal.')
+        st.stop()
 
-    if key != '' and not re.match(r'^[0-9a-fA-F]+$', key):
+    if key != '' and not re.match('^[0-9a-fA-F]+$', key):
         st.error('Key must be in hexadecimal.')
+        st.stop()
 
-    if (
-        encrypted_text != ''
-        and key != ''
-        and re.match(r'^[0-9a-fA-F]+$', key)
-        and re.match(r'^[0-9a-fA-F]+$', encrypted_text)
-    ):
+    if encrypted_text != '' and key != '':
         decrypted_text = decode(hex2ba(encrypted_text), key)
         st.markdown('**Decrypted text**')
         try:
