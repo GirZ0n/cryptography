@@ -16,9 +16,8 @@ def show_encoder():
 
     if key != '' and not re.match('^[0-9a-fA-F]+$', key):
         st.error('Key must be in hexadecimal.')
-        st.stop()
 
-    if text != '' and key != '':
+    if text != '' and key != '' and not re.match('^[0-9a-fA-F]+$', key):
         encrypted_text = encode(text, key)
         st.markdown('**Encrypted text**')
         st.markdown(ba2hex(encrypted_text))
