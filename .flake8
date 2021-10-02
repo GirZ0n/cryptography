@@ -23,6 +23,7 @@ ignore=D10, # Missing docstrings
        WPS407, # Forbid mutable constants on a module level.
        WPS421, # Forbid calling some built-in functions.
        WPS432, # Forbid magic numbers.
+       WPS435, # Forbid multiplying lists.
 
 exclude=venv,
 
