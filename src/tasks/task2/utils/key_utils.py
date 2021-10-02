@@ -40,12 +40,14 @@ def cyclic_shift(block: Tuple, bias: int, direction: Literal['left', 'right'] = 
     return right + left
 
 
-def generate_subkeys(shuffled_key: bitarray) -> List[bitarray]:
+def generate_subkeys(key: bitarray) -> List[bitarray]:
+    c_block = key[: len(key) // 2]
+    d_block = key[len(key) // 2 :]
+
     subkeys = []
-    c_block = shuffled_key[: int(len(shuffled_key) / 2)]
-    d_block = shuffled_key[int(len(shuffled_key) / 2) :]
-    for i in range(16):
-        c_block = cyclic_shift(c_block, CYCLIC_SHIFT[i])
-        d_block = cyclic_shift(d_block, CYCLIC_SHIFT[i])
+    for bias in CYCLIC_SHIFT:
+        c_block = cyclic_shift(c_block, bias)
+        d_block = cyclic_shift(d_block, bias)
         subkeys.append(permute(c_block + d_block, SUBKEY_PERMUTATION))
+
     return subkeys
