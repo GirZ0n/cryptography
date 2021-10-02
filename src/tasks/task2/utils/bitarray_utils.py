@@ -3,8 +3,6 @@ from typing import List
 from bitarray import bitarray
 from bitarray.util import hex2ba, zeros
 
-from src.tasks.task2.config import FILL_SYMBOL
-
 
 def convert_text_to_bitarray(text: str) -> bitarray:
     array = bitarray()
@@ -25,17 +23,13 @@ def convert_hex_key_to_bitarray(hex_key: str, *, length: int) -> bitarray:
     return ba[-length:]
 
 
-def split_by_block_length(bits: bitarray, block_length: int, fill_symbol: str = FILL_SYMBOL) -> List[bitarray]:
+def split_by_block_length(bits: bitarray, block_length: int) -> List[bitarray]:
     blocks = [bits[i : (i + block_length)] for i in range(0, len(bits), block_length)]
-
-    ba_fill_symbol = convert_text_to_bitarray(fill_symbol)
-    if len(ba_fill_symbol) != 8:
-        raise ValueError('The bit length of "fill_symbol" must be 8.')
 
     last_block = blocks[-1]
     if len(last_block) != block_length:
         need_to_fill = block_length - len(last_block)
-        last_block += ba_fill_symbol * (need_to_fill // len(ba_fill_symbol))
+        last_block.extend([0] * need_to_fill)
         blocks[-1] = last_block
 
     return blocks

@@ -1,9 +1,5 @@
 # flake8: noqa
 
-# ---------- Parameters ----------
-
-FILL_SYMBOL = '\x00'  # Must have a length of 8.
-
 # ---------- Text tables ----------
 
 INITIAL_PERMUTATION = (
