@@ -41,6 +41,9 @@ def cyclic_shift(block: Tuple, bias: int, direction: Literal['left', 'right'] = 
 
 
 def generate_subkeys(key: bitarray) -> List[bitarray]:
+    if len(key) % 2 != 0:
+        raise ValueError('The key must have an even size.')
+
     c_block = key[: len(key) // 2]
     d_block = key[len(key) // 2 :]
 
