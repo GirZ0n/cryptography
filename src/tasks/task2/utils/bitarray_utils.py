@@ -1,4 +1,3 @@
-from math import floor
 from typing import List
 
 from bitarray import bitarray
@@ -26,24 +25,23 @@ def convert_hex_key_to_bitarray(hex_key: str, *, length: int) -> bitarray:
     return ba[-length:]
 
 
-def split_by_block_length(bits: bitarray, block_length: int, fill: str = FILL_SYMBOL) -> List[bitarray]:
+def split_by_block_length(bits: bitarray, block_length: int, fill_symbol: str = FILL_SYMBOL) -> List[bitarray]:
     blocks = [bits[i : (i + block_length)] for i in range(0, len(bits), block_length)]
 
-    bit_fill = convert_text_to_bitarray(fill)
-    if len(bit_fill) != 8:
+    ba_fill_symbol = convert_text_to_bitarray(fill_symbol)
+    if len(ba_fill_symbol) != 8:
         raise ValueError('The bit length of "fill" must be 8.')
 
     last_block = blocks[-1]
     if len(last_block) != block_length:
         need_to_fill = block_length - len(last_block)
-        last_block += bit_fill * floor(need_to_fill / len(bit_fill))
+        last_block += ba_fill_symbol * (need_to_fill // len(ba_fill_symbol))
         blocks[-1] = last_block
 
     return blocks
 
 
 def permute(block: bitarray, permutation_table: tuple, bias: int = 1) -> bitarray:
-
     if min(permutation_table) - bias < 0 or max(permutation_table) - bias >= len(block):
         raise ValueError(
             f'The values in the table of permutations must be in the range from 0 to {len(block) - 1}. '
