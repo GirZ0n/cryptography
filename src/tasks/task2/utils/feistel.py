@@ -35,5 +35,4 @@ def feistel_transformations(
     for key in keys:
         left_part, right_part = right_part, xor(left_part, encryption_function(right_part, key))
 
-    # Или left_part + right_part
     return right_part + left_part

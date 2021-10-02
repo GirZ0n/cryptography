@@ -4,7 +4,7 @@ from bitarray.util import ba2hex
 from src.tasks.task2.config import (
     FILL_SYMBOL,
     INITIAL_PERMUTATION,
-    KEY_INITIAL_PERMUTATION,
+    KEY_INITIAL_PERMUTATION, REVERSED_INITIAL_PERMUTATION,
 )
 from src.tasks.task2.utils.bitarray_utils import (
     convert_key_to_bitarray,
@@ -27,7 +27,8 @@ def encode(text: str, key: str) -> str:
     encrypted_text = bitarray()
     for block in blocks:
         shuffled_block = permute(block, INITIAL_PERMUTATION)
-        encrypted_text += feistel_transformations(shuffled_block, subkeys)
+        encrypted_block = feistel_transformations(shuffled_block, subkeys)
+        encrypted_text += permute(encrypted_block, REVERSED_INITIAL_PERMUTATION)
 
     return ba2hex(encrypted_text)
 
