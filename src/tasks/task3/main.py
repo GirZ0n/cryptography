@@ -1,5 +1,4 @@
 from bitarray import bitarray
-from bitarray.util import ba2hex
 
 from src.tasks.task3.utils.aes import (
     add_round_key,
