@@ -9,6 +9,7 @@ ignore=D10, # Missing docstrings
        WPS111, # Forbid short variable or module names.
        WPS114, # Forbid names with underscored numbers pattern.
        WPS200, # Forbid modules with complex lines.
+       WPS202, # Forbid too many classes and functions in a single module.
        WPS210, # Forbid too many local variables in the unit of code.
        WPS211, # Forbid too many arguments for a function or method.
        WPS221, # Forbid complex lines.
