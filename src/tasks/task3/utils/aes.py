@@ -96,10 +96,10 @@ def xor_words(first: Word, second: Word) -> Word:
 def _expand_key(key: Block, index: int) -> Block:
     new_key = copy(key)
 
-    temp = rot_word(new_key[3])
-    sub_bytes(temp)
-    temp = xor_words(temp, RCON[index])
-    new_key[0] = xor_words(new_key[0], temp)
+    last_word = rot_word(new_key[3])
+    sub_bytes(last_word)
+    last_word = xor_words(last_word, RCON[index])
+    new_key[0] = xor_words(new_key[0], last_word)
 
     for i in range(1, 4):
         new_key[i] = xor_words(new_key[i], new_key[i - 1])
