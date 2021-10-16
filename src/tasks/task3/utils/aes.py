@@ -1,8 +1,6 @@
 from copy import copy
 from typing import List, Tuple
 
-import numpy as np
-import pandas as pd
 from bitarray import bitarray
 from bitarray.util import ba2int, int2ba
 from multimethod import multimethod
@@ -25,11 +23,7 @@ def bits_to_block(bits: bitarray) -> Block:
 
 
 def block_to_bits(block: Block) -> bitarray:
-    result = bitarray()
-    for row in block:
-        for elem in row:
-            result += int2ba(elem, length=8)
-    return result
+    return sum([int2ba(number, length=8) for row in block for number in row], start=bitarray())
 
 
 def sub_byte(byte: int, sbox: Tuple[Tuple[int]]) -> int:
@@ -39,21 +33,16 @@ def sub_byte(byte: int, sbox: Tuple[Tuple[int]]) -> int:
 
 
 @multimethod
-def sub_bytes(state: Block, is_inverse: bool = False) -> None:
+def sub_bytes(word: Word, is_inverse: bool = False) -> None:
     s_box = INV_SBOX if is_inverse else SBOX
-
-    new_state = state
-    for column_index, word in enumerate(state):
-        for row_index, byte in enumerate(word):
-            new_state[column_index][row_index] = sub_byte(byte, s_box)
+    for index, byte in enumerate(word):
+        word[index] = sub_byte(byte, s_box)
 
 
 @multimethod
-def sub_bytes(word: Word, is_inverse: bool = False) -> None:
-    s_box = INV_SBOX if is_inverse else SBOX
-
-    for index, byte in enumerate(word):
-        word[index] = sub_byte(byte, s_box)
+def sub_bytes(state: Block, is_inverse: bool = False) -> None:  # noqa: WPS440, F811
+    for word in state:
+        sub_bytes(word, is_inverse)
 
 
 def _transpose(state: Block) -> Block:
@@ -79,10 +68,9 @@ def shift_rows(state: Block, is_inverse: bool = False) -> Block:
 def mix_column(word: Word, mix_columns_matrix: Tuple[Tuple[Tuple[int]]]) -> None:
     old_word = copy(word)
     for i, row in enumerate(mix_columns_matrix):
-        result = 0
+        word[i] = 0
         for j, table in enumerate(row):
-            result ^= table[old_word[j]]
-        word[i] = result
+            word[i] ^= table[old_word[j]]
 
 
 def mix_columns(state: Block, is_inverse: bool = False):
@@ -124,13 +112,3 @@ def generate_keys(key: Block) -> List[Block]:
     for i in range(10):
         keys.append(_expand_key(keys[i], i))
     return keys
-
-
-def _print_list(a, header):
-    print(header)
-    print(
-        pd.DataFrame(np.array([[hex(elem)[2:] for elem in column] for column in a]).T).to_string(
-            index=False, header=False
-        )
-    )
-    print()
