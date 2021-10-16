@@ -4,7 +4,7 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from bitarray import bitarray
-from bitarray.util import ba2hex, ba2int, hex2ba, int2ba
+from bitarray.util import ba2hex, ba2int, int2ba
 from multimethod import multimethod
 
 from src.tasks.task3.config import INV_MIX_COLUMNS_MATRIX, INV_SBOX, MIX_COLUMNS_MATRIX, RCON, SBOX
@@ -29,7 +29,7 @@ def bits_to_block(bits: bitarray) -> Block:
     return state
 
 
-def block_to_bits(block: Block) -> Block:
+def block_to_bits(block: Block) -> bitarray:
     result = bitarray()
     for row in block:
         for elem in row:
@@ -102,32 +102,6 @@ def add_round_key(state: Block, key: Key) -> None:
             state[column_index][row_index] ^= key[column_index][row_index]
 
 
-# def x_time(byte: bitarray) -> bitarray:
-#     if byte & bitarray('10000000'):
-#         return ((byte << 1) ^ bitarray('00011011')) & bitarray('11111111')
-#
-#     return byte << 1
-#
-#
-# def mix_columns(state: Block, is_inverse: bool = False) -> None:
-#     if is_inverse:
-#         for i in range(4):
-#             u = x_time(x_time(state[0][i] ^ state[2][i]))
-#             v = x_time(x_time(state[1][i] ^ state[3][i]))
-#             state[0][i] ^= u
-#             state[1][i] ^= v
-#             state[2][i] ^= u
-#             state[3][i] ^= v
-#
-#     for i in range(len(state[0])):
-#         t = state[0][i] ^ state[1][i] ^ state[2][i] ^ state[3][i]
-#         u = state[0][i]
-#         state[0][i] ^= t ^ x_time(state[0][i] ^ state[1][i])
-#         state[1][i] ^= t ^ x_time(state[1][i] ^ state[2][i])
-#         state[2][i] ^= t ^ x_time(state[2][i] ^ state[3][i])
-#         state[3][i] ^= t ^ x_time(state[3][i] ^ u)
-
-
 def rot_word(word: Word) -> Word:
     return word[1:] + word[:1]
 
@@ -169,114 +143,58 @@ def _print_list(a, header):
 
 def encode(text: str, key: str):
     bitstring = convert_text_to_bitarray(text)
-    print(ba2hex(bitstring))
-    # bitstring = hex2ba('54776F204F6E65204E696E652054776F')
     blocks = split_by_block_length(bitstring, 128)
     states = list(map(bits_to_block, blocks))
 
     bitkey = convert_hex_key_to_bitarray(key, length=128)
-    # bitkey = hex2ba('5468617473206D79204B756E67204675')
     bitkey = bits_to_block(bitkey)
     keys = generate_keys(bitkey)
 
-    # for key in keys:
-    #     print(' '.join([hex(elem)[2:] for column in key for elem in column]))
-
     res = bitarray()
     for i, state in enumerate(states):
-        # _print_list(state, f'State 0')
-
-        # _print_list(keys[0], f'Key 0')
-
         add_round_key(state, keys[0])
-        # _print_list(state, f'State 0 (round key)')
 
         for j in range(1, 10):
             sub_bytes(state)
-            # _print_list(state, f'State {j} (sub bytes)')
-
             state = shift_rows(state)
-            # _print_list(state, f'State {j} (shift rows)')
-
             mix_columns(state)
-            # _print_list(state, f'State {j} (mix columns)')
-
-            # _print_list(keys[j], f'Key {j}')
-
             add_round_key(state, keys[j])
-            # _print_list(state, f'State {j} (round bytes)')
 
         sub_bytes(state)
-        # _print_list(state, f'State 10 (sub bytes)')
-
         state = shift_rows(state)
-        # _print_list(state, f'State 10 (shift rows)')
-
-        # _print_list(keys[-1], f'Key 10')
-
         add_round_key(state, keys[-1])
-        # _print_list(state, f'State 10 (round key)')
 
         res += block_to_bits(state)
-
-    print()
-
-    # for r in res:
-    #     print(' '.join([hex(elem)[2:] for column in r for elem in column]))
 
     return res
 
 
 def decode(bitstring: bitarray, key: str) -> bitarray:
-    # bitstring = hex2ba('29c3505f571420f6402299b31a02d73a')
     blocks = split_by_block_length(bitstring, 128)
     states = list(map(bits_to_block, blocks))
 
     bitkey = convert_hex_key_to_bitarray(key, length=128)
-    # bitkey = hex2ba('5468617473206D79204B756E67204675')
     bitkey = bits_to_block(bitkey)
 
     keys = generate_keys(bitkey)[::-1]
 
     res = bitarray()
     for i, state in enumerate(states):
-        # _print_list(state, f'State 0')
-
-        # _print_list(keys[0], f'Key 0')
-
         add_round_key(state, keys[0])
-        # _print_list(state, f'State 0 (round key)')
 
         for j in range(1, 10):
             state = shift_rows(state, is_inverse=True)
-            # _print_list(state, f'State {j} (shift rows)')
-
             sub_bytes(state, is_inverse=True)
-            # _print_list(state, f'State {j} (sub bytes)')
-
-            # _print_list(keys[j], f'Key {j}')
             add_round_key(state, keys[j])
-            # _print_list(state, f'State {j} (round bytes)')
-
             mix_columns(state, is_inverse=True)
-            # _print_list(state, f'State {j} (mix columns)')
 
         state = shift_rows(state, is_inverse=True)
-        # _print_list(state, f'State 10 (shift rows)')
-
         sub_bytes(state, is_inverse=True)
-        # _print_list(state, f'State 10 (sub bytes)')
-
-        # _print_list(keys[-1], f'Key 10')
-
         add_round_key(state, keys[-1])
-        # _print_list(state, f'State 10 (round key)')
 
         res += block_to_bits(state)
 
     return res
-    # for r in res:
-    #     print(' '.join([hex(elem)[2:] for column in r for elem in column]))
 
 
 if __name__ == '__main__':
@@ -284,28 +202,3 @@ if __name__ == '__main__':
     print(ba2hex(ba))
     res = decode(ba, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
     print(ba2hex(res))
-    # inp = '00000001001000110100010101100111100010011010101111001101111011110000000100100011010001010110011110001001101010111100110111101111'
-    #
-    # res = bits_to_block(bitarray(inp))
-    # for row in res:
-    #     print(' '.join(map(str, row)))
-    # F
-    # print()
-    #
-    # kek = _transpose(res)
-    # for row in kek:
-    #     print(' '.join(map(str, row)))
-    #
-    # print()
-    #
-    # res = shift_rows(res)
-    # # for row in res:
-    # #     print(' '.join(map(str, row)))
-    # #
-    # # print()
-    #
-    # res = _transpose(res)
-    # for row in res:
-    #     print(' '.join(map(str, row)))
-    #
-    # print()
