@@ -27,7 +27,7 @@ def encode(text: str, key: str):
     keys = generate_keys(bitkey)
 
     res = bitarray()
-    for i, state in enumerate(states):
+    for state in states:
         add_round_key(state, keys[0])
 
         for j in range(1, 10):
@@ -55,7 +55,7 @@ def decode(bitstring: bitarray, key: str) -> bitarray:
     keys = generate_keys(bitkey)[::-1]
 
     res = bitarray()
-    for i, state in enumerate(states):
+    for state in states:
         add_round_key(state, keys[0])
 
         for j in range(1, 10):
@@ -77,4 +77,3 @@ if __name__ == '__main__':
     ba = encode('Hello, World!', 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
     print(ba2hex(ba))
     res = decode(ba, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
-    print(ba2hex(res))
