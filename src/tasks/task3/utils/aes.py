@@ -4,19 +4,14 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from bitarray import bitarray
-from bitarray.util import ba2hex, ba2int, int2ba
+from bitarray.util import ba2int, int2ba
 from multimethod import multimethod
 
 from src.tasks.task3.config import INV_MIX_COLUMNS_MATRIX, INV_SBOX, MIX_COLUMNS_MATRIX, RCON, SBOX
-from src.tasks.task3.utils.bitarray_utils import (
-    convert_hex_key_to_bitarray,
-    convert_text_to_bitarray,
-    split_by_block_length,
-)
+from src.tasks.task3.utils.bitarray_utils import split_by_block_length
 
 Word = List[int]
 Block = List[Word]
-Key = List[List[int]]
 
 
 def bits_to_block(bits: bitarray) -> Block:
@@ -96,7 +91,7 @@ def mix_columns(state: Block, is_inverse: bool = False):
         mix_column(word, mix_columns_matrix)
 
 
-def add_round_key(state: Block, key: Key) -> None:
+def add_round_key(state: Block, key: Block) -> None:
     for column_index, word in enumerate(state):
         for row_index, _ in enumerate(word):
             state[column_index][row_index] ^= key[column_index][row_index]
@@ -110,7 +105,7 @@ def xor_words(first: Word, second: Word) -> Word:
     return [f ^ s for f, s in zip(first, second)]
 
 
-def _expand_key(key: Block, index: int) -> Key:
+def _expand_key(key: Block, index: int) -> Block:
     new_key = copy(key)
 
     temp = rot_word(new_key[3])
@@ -124,7 +119,7 @@ def _expand_key(key: Block, index: int) -> Key:
     return new_key
 
 
-def generate_keys(key: Key) -> List[Key]:
+def generate_keys(key: Block) -> List[Block]:
     keys = [key]
     for i in range(10):
         keys.append(_expand_key(keys[i], i))
@@ -139,66 +134,3 @@ def _print_list(a, header):
         )
     )
     print()
-
-
-def encode(text: str, key: str):
-    bitstring = convert_text_to_bitarray(text)
-    blocks = split_by_block_length(bitstring, 128)
-    states = list(map(bits_to_block, blocks))
-
-    bitkey = convert_hex_key_to_bitarray(key, length=128)
-    bitkey = bits_to_block(bitkey)
-    keys = generate_keys(bitkey)
-
-    res = bitarray()
-    for i, state in enumerate(states):
-        add_round_key(state, keys[0])
-
-        for j in range(1, 10):
-            sub_bytes(state)
-            state = shift_rows(state)
-            mix_columns(state)
-            add_round_key(state, keys[j])
-
-        sub_bytes(state)
-        state = shift_rows(state)
-        add_round_key(state, keys[-1])
-
-        res += block_to_bits(state)
-
-    return res
-
-
-def decode(bitstring: bitarray, key: str) -> bitarray:
-    blocks = split_by_block_length(bitstring, 128)
-    states = list(map(bits_to_block, blocks))
-
-    bitkey = convert_hex_key_to_bitarray(key, length=128)
-    bitkey = bits_to_block(bitkey)
-
-    keys = generate_keys(bitkey)[::-1]
-
-    res = bitarray()
-    for i, state in enumerate(states):
-        add_round_key(state, keys[0])
-
-        for j in range(1, 10):
-            state = shift_rows(state, is_inverse=True)
-            sub_bytes(state, is_inverse=True)
-            add_round_key(state, keys[j])
-            mix_columns(state, is_inverse=True)
-
-        state = shift_rows(state, is_inverse=True)
-        sub_bytes(state, is_inverse=True)
-        add_round_key(state, keys[-1])
-
-        res += block_to_bits(state)
-
-    return res
-
-
-if __name__ == '__main__':
-    ba = encode('Hello, World!', 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
-    print(ba2hex(ba))
-    res = decode(ba, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
-    print(ba2hex(res))
