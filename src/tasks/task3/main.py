@@ -68,9 +68,3 @@ def decode(bitstring: bitarray, key: str) -> bitarray:
         decrypted_text += block_to_bits(state)
 
     return decrypted_text
-
-
-if __name__ == '__main__':
-    ba = encode('Hello, World!', 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
-    print(ba2hex(ba))
-    res = decode(ba, 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA')
