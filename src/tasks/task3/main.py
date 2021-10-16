@@ -23,10 +23,9 @@ def encode(text: str, key: str):
     states = list(map(bits_to_block, blocks))
 
     bitkey = convert_hex_key_to_bitarray(key, length=128)
-    bitkey = bits_to_block(bitkey)
-    keys = generate_keys(bitkey)
+    keys = generate_keys(bits_to_block(bitkey))
 
-    res = bitarray()
+    encrypted_text = bitarray()
     for state in states:
         add_round_key(state, keys[0])
 
@@ -40,9 +39,9 @@ def encode(text: str, key: str):
         state = shift_rows(state)
         add_round_key(state, keys[-1])
 
-        res += block_to_bits(state)
+        encrypted_text += block_to_bits(state)
 
-    return res
+    return encrypted_text
 
 
 def decode(bitstring: bitarray, key: str) -> bitarray:
@@ -50,11 +49,9 @@ def decode(bitstring: bitarray, key: str) -> bitarray:
     states = list(map(bits_to_block, blocks))
 
     bitkey = convert_hex_key_to_bitarray(key, length=128)
-    bitkey = bits_to_block(bitkey)
+    keys = generate_keys(bits_to_block(bitkey))[::-1]
 
-    keys = generate_keys(bitkey)[::-1]
-
-    res = bitarray()
+    decrypted_text = bitarray()
     for state in states:
         add_round_key(state, keys[0])
 
@@ -68,9 +65,9 @@ def decode(bitstring: bitarray, key: str) -> bitarray:
         sub_bytes(state, is_inverse=True)
         add_round_key(state, keys[-1])
 
-        res += block_to_bits(state)
+        decrypted_text += block_to_bits(state)
 
-    return res
+    return decrypted_text
 
 
 if __name__ == '__main__':
