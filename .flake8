@@ -5,10 +5,12 @@ ignore=D10, # Missing docstrings
        I00, # flake8-isort
        E203, # Whitespace before ':'.
        E402, # Module level import not at top of file.
+       N806, # Variable in function should be lowercase
        WPS100, # Forbid blacklisted module names.
        WPS111, # Forbid short variable or module names.
        WPS210, # Forbid too many local variables in the unit of code.
        WPS211, # Forbid too many arguments for a function or method.
+       WPS213, # Forbid putting too many expressions in a single function.
        WPS221, # Forbid complex lines.
        WPS226, # Forbid the overuse of string constants.
        WPS234, # Forbid overly complex annotations.
