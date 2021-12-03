@@ -3,6 +3,8 @@ from typing import List
 
 from bitarray import bitarray
 
+_MODULUS = 2 ** 32
+
 
 class MD5:
     _s = (
@@ -13,23 +15,74 @@ class MD5:
     )
 
     _key = (
-        0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
-        0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-        0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-        0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-        0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-        0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-        0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-        0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-        0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-        0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-        0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-        0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-        0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-        0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-        0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-        0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
+        0xD76AA478, 0xE8C7B756, 0x242070DB, 0xC1BDCEEE,
+        0xF57C0FAF, 0x4787C62A, 0xA8304613, 0xFD469501,
+        0x698098D8, 0x8B44F7AF, 0xFFFF5BB1, 0x895CD7BE,
+        0x6B901122, 0xFD987193, 0xA679438E, 0x49B40821,
+        0xF61E2562, 0xC040B340, 0x265E5A51, 0xE9B6C7AA,
+        0xD62F105D, 0x02441453, 0xD8A1E681, 0xE7D3FBC8,
+        0x21E1CDE6, 0xC33707D6, 0xF4D50D87, 0x455A14ED,
+        0xA9E3E905, 0xFCEFA3F8, 0x676F02D9, 0x8D2A4C8A,
+        0xFFFA3942, 0x8771F681, 0x6D9D6122, 0xFDE5380C,
+        0xA4BEEA44, 0x4BDECFA9, 0xF6BB4B60, 0xBEBFBC70,
+        0x289B7EC6, 0xEAA127FA, 0xD4EF3085, 0x04881D05,
+        0xD9D4D039, 0xE6DB99E5, 0x1FA27CF8, 0xC4AC5665,
+        0xF4292244, 0x432AFF97, 0xAB9423A7, 0xFC93A039,
+        0x655B59C3, 0x8F0CCC92, 0xFFEFF47D, 0x85845DD1,
+        0x6FA87E4F, 0xFE2CE6E0, 0xA3014314, 0x4E0811A1,
+        0xF7537E82, 0xBD3AF235, 0x2AD7D2BB, 0xEB86D391,
     )
+
+    @classmethod
+    def hash(cls, text: str) -> int:  # noqa: WPS231
+        bit_text = cls.__text_to_bits(text)
+        cls.__expand_bits(bit_text)
+
+        a0 = 0x67452301
+        b0 = 0xEFCDAB89
+        c0 = 0x98BADCFE
+        d0 = 0x10325476
+
+        for block in cls.__split_by_chunk_length(bit_text, 512):
+            a = a0
+            b = b0
+            c = c0
+            d = d0
+
+            words = cls.__split_by_chunk_length(block, 32)
+            words = [int.from_bytes(word.tobytes(), byteorder='little') for word in words]
+
+            for i in range(64):
+                if i in range(16):
+                    f = (b & c) | (~b & d)  # noqa: WPS465
+                    k = i
+                elif i in range(16, 32):
+                    f = (b & d) | (~d & c)  # noqa: WPS465
+                    k = (5 * i + 1) % 16
+                elif i in range(32, 48):
+                    f = b ^ c ^ d
+                    k = (3 * i + 5) % 16
+                else:
+                    f = c ^ (~d | b)  # noqa: WPS465
+                    k = (7 * i) % 16
+
+                f = (f + a) % _MODULUS
+                f = (f + words[k]) % _MODULUS
+                f = (f + cls._key[i]) % _MODULUS
+                f = cls.__rotate_left(f, cls._s[i])
+                f = (f + b) % _MODULUS
+
+                a = d
+                d = c
+                c = b
+                b = f
+
+            a0 = (a0 + a) % _MODULUS
+            b0 = (b0 + b) % _MODULUS
+            c0 = (c0 + c) % _MODULUS
+            d0 = (d0 + d) % _MODULUS
+
+        return cls.__convert_states(a0, b0, c0, d0)
 
     @staticmethod
     def __text_to_bits(text: str) -> bitarray:
@@ -62,58 +115,11 @@ class MD5:
     def __rotate_left(x: int, n: int) -> int:
         return (x << n) | (x >> (32 - n))
 
-    @classmethod
-    def hash(cls, text: str) -> int:
-        bit_text = cls.__text_to_bits(text)
-        cls.__expand_bits(bit_text)
+    @staticmethod
+    def __convert_states(a: int, b: int, c: int, d: int) -> int:
+        a = int.from_bytes(struct.pack('>I', a), byteorder='little')
+        b = int.from_bytes(struct.pack('>I', b), byteorder='little')
+        c = int.from_bytes(struct.pack('>I', c), byteorder='little')
+        d = int.from_bytes(struct.pack('>I', d), byteorder='little')
 
-        a0 = 0x67452301
-        b0 = 0xEFCDAB89
-        c0 = 0x98BADCFE
-        d0 = 0x10325476
-
-        for block in cls.__split_by_chunk_length(bit_text, 512):
-            a = a0
-            b = b0
-            c = c0
-            d = d0
-
-            words = cls.__split_by_chunk_length(block, 32)
-            words = [int.from_bytes(word.tobytes(), byteorder='little') for word in words]
-
-            for i in range(64):
-                if i in range(16):
-                    f = (b & c) | (~b & d)
-                    k = i
-                elif i in range(16, 32):
-                    f = (b & d) | (~d & c)
-                    k = (5 * i + 1) % 16
-                elif i in range(32, 48):
-                    f = b ^ c ^ d
-                    k = (3 * i + 5) % 16
-                else:
-                    f = c ^ (~d | b)
-                    k = (7 * i) % 16
-
-                f = (f + a) % (2 ** 32)
-                f = (f + words[k]) % (2 ** 32)
-                f = (f + cls._key[i]) % (2 ** 32)
-                f = cls.__rotate_left(f, cls._s[i])
-                f = (f + b) % (2 ** 32)
-
-                a = d
-                d = c
-                c = b
-                b = f
-
-            a0 = (a0 + a) % 2 ** 32
-            b0 = (b0 + b) % 2 ** 32
-            c0 = (c0 + c) % 2 ** 32
-            d0 = (d0 + d) % 2 ** 32
-
-        a0 = int.from_bytes(struct.pack('>I', a0), byteorder='little')
-        b0 = int.from_bytes(struct.pack('>I', b0), byteorder='little')
-        c0 = int.from_bytes(struct.pack('>I', c0), byteorder='little')
-        d0 = int.from_bytes(struct.pack('>I', d0), byteorder='little')
-
-        return int(f'{format(a0, "08x")}{format(b0, "08x")}{format(c0, "08x")}{format(d0, "08x")}', 16)
+        return int(f'{format(a, "08x")}{format(b, "08x")}{format(c, "08x")}{format(d, "08x")}', 16)
