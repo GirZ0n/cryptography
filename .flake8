@@ -8,6 +8,7 @@ ignore=D10, # Missing docstrings
        N806, # Variable in function should be lowercase
        WPS100, # Forbid blacklisted module names.
        WPS111, # Forbid short variable or module names.
+       WPS112, # Forbid private name pattern.
        WPS114, # Forbid names with underscored numbers pattern.
        WPS200, # Forbid modules with complex lines.
        WPS202, # Forbid too many classes and functions in a single module.
@@ -31,5 +32,6 @@ ignore=D10, # Missing docstrings
        WPS421, # Forbid calling some built-in functions.
        WPS432, # Forbid magic numbers.
        WPS435, # Forbid multiplying lists.
+       WPS602, # Forbid @staticmethod decorator.
 
 exclude=venv,
