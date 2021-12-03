@@ -14,7 +14,7 @@ class MD5:
         6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
     )
 
-    _key = (
+    _t = (
         0xD76AA478, 0xE8C7B756, 0x242070DB, 0xC1BDCEEE,
         0xF57C0FAF, 0x4787C62A, 0xA8304613, 0xFD469501,
         0x698098D8, 0x8B44F7AF, 0xFFFF5BB1, 0x895CD7BE,
@@ -68,7 +68,7 @@ class MD5:
 
                 f = (f + a) % _MODULUS
                 f = (f + words[k]) % _MODULUS
-                f = (f + cls._key[i]) % _MODULUS
+                f = (f + cls._t[i]) % _MODULUS
                 f = cls.__rotate_left(f, cls._s[i])
                 f = (f + b) % _MODULUS
 
